@@ -1,3 +1,22 @@
 spring:
   application:
     name: backend
+
+  # Conexão com PostgreSQL
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  # JPA / Hibernate
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  # Migrações do banco de dados
+  flyway:
+    enabled: true
+
+
