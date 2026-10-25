@@ -1,0 +1,156 @@
+Project BibliOneTeca {
+  database_type: 'PostgreSQL'
+  Note: 'Modelo relacional proposto. UUID é tipo nativo do PostgreSQL.'
+}
+
+Table persons {
+  id uuid [pk, not null]
+  cpf varchar(11) [not null, unique, note: 'Armazenar somente dígitos; UNIQUE no banco']
+  full_name varchar(150) [not null]
+  date_of_birth date [not null]
+  email varchar(254) [not null, note: 'Índice único case-insensitive na migration SQL']
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table librarians {
+  person_id uuid [pk, not null]
+  password_hash varchar(255) [not null, note: 'Nunca armazenar senha em texto puro']
+}
+
+Table clients {
+  person_id uuid [pk, not null]
+  cell_number varchar(20) [not null]
+  registered_at date [not null]
+  registration_expiration date [not null]
+}
+
+Table authors {
+  id uuid [pk, not null]
+  name varchar(255) [not null]
+  date_of_birth date
+  date_of_death date
+  nationality varchar(100)
+}
+
+Table books {
+  id uuid [pk, not null]
+  title varchar(255) [not null]
+  created_at timestamptz [not null]
+}
+
+Table genres {
+  id uuid [pk, not null]
+  name varchar(100) [not null, note: 'Índice único case-insensitive na migration SQL']
+}
+
+Table publishers {
+  id uuid [pk, not null]
+  legal_name varchar(255) [not null]
+  trade_name varchar(255) [not null]
+  cnpj varchar(14) [not null, unique, note: 'Somente dígitos']
+  site_url varchar(2048)
+}
+
+Table book_authors {
+  book_id uuid [not null]
+  author_id uuid [not null]
+
+  indexes {
+    (book_id, author_id) [pk]
+    (author_id)
+  }
+}
+
+Table book_genres {
+  book_id uuid [not null]
+  genre_id uuid [not null]
+
+  indexes {
+    (book_id, genre_id) [pk]
+    (genre_id)
+  }
+}
+
+Table editions {
+  id uuid [pk, not null]
+  isbn varchar(17) [not null, unique, note: 'Normalizar ISBN no serviço antes de persistir']
+  edition_number int [not null, default: 1]
+  year_publication smallint [not null]
+  language varchar(50) [not null]
+  page_number int [not null]
+  cover_url varchar(2048)
+  synopsis text
+  book_id uuid [not null]
+  publisher_id uuid [not null]
+  created_at timestamptz [not null]
+
+  indexes {
+    (book_id)
+    (publisher_id)
+  }
+}
+
+Table physical_copies {
+  id uuid [pk, not null]
+  edition_id uuid [not null]
+  asset_code varchar(50) [not null, unique]
+  inventory_status varchar(20) [not null, default: 'AVAILABLE', note: 'AVAILABLE, LOST ou MAINTENANCE; empréstimo ativo é derivado de loans']
+  acquired_at date
+  created_at timestamptz [not null]
+
+  indexes {
+    (edition_id)
+  }
+}
+
+Table loans {
+  id uuid [pk, not null]
+  date_loan date [not null]
+  due_date date [not null]
+  date_return date
+  renewal_count smallint [not null, default: 0]
+  client_person_id uuid [not null]
+  librarian_person_id uuid [not null]
+  physical_copy_id uuid [not null]
+  created_at timestamptz [not null]
+
+  indexes {
+    (client_person_id)
+    (librarian_person_id)
+    (physical_copy_id)
+    (client_person_id, id) [unique, name: 'uq_loans_client_id']
+    (client_person_id, due_date) [name: 'ix_loans_active_client_due_date', note: 'O índice parcial para date_return IS NULL está definido na migration SQL']
+  }
+}
+
+Table client_suspensions {
+  id uuid [pk, not null]
+  client_person_id uuid [not null]
+  source_loan_id uuid
+  reason varchar(40) [not null]
+  starts_at date [not null]
+  ends_at date [not null]
+  created_at timestamptz [not null]
+
+  indexes {
+    (source_loan_id, reason) [unique]
+    (client_person_id, starts_at, ends_at)
+  }
+}
+
+Ref: librarians.person_id - persons.id
+Ref: clients.person_id - persons.id
+Ref: book_authors.book_id > books.id [delete: cascade]
+Ref: book_authors.author_id > authors.id [delete: cascade]
+Ref: book_genres.book_id > books.id [delete: cascade]
+Ref: book_genres.genre_id > genres.id [delete: cascade]
+Ref: editions.book_id > books.id [delete: restrict]
+Ref: editions.publisher_id > publishers.id [delete: restrict]
+Ref: physical_copies.edition_id > editions.id [delete: restrict]
+Ref: loans.client_person_id > clients.person_id [delete: restrict]
+Ref: loans.librarian_person_id > librarians.person_id [delete: restrict]
+Ref: loans.physical_copy_id > physical_copies.id [delete: restrict]
+Ref: client_suspensions.client_person_id > clients.person_id [delete: restrict]
+Ref: client_suspensions.(client_person_id, source_loan_id) > loans.(client_person_id, id) [delete: restrict]
+// A migration SQL contém ainda um índice único parcial: somente um loan ativo por exemplar.

@@ -1,0 +1,109 @@
+@startuml BibliOneTecaDomain
+hide empty methods
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package "Acervo" {
+  class Book {
+    +id: UUID
+    +title: String
+  }
+  class Author {
+    +id: UUID
+    +name: String
+    +dateOfBirth: LocalDate
+    +dateOfDeath: LocalDate
+    +nationality: String
+  }
+  class Genre {
+    +id: UUID
+    +name: String
+  }
+  class Publisher {
+    +id: UUID
+    +legalName: String
+    +tradeName: String
+    +cnpj: String
+    +siteUrl: String
+  }
+  class Edition {
+    +id: UUID
+    +isbn: String
+    +editionNumber: Integer
+    +yearPublication: Integer
+    +language: String
+    +pageNumber: Integer
+    +coverUrl: String
+    +synopsis: String
+  }
+  class PhysicalCopy {
+    +id: UUID
+    +assetCode: String
+    +inventoryStatus: InventoryStatus
+    +acquiredAt: LocalDate
+  }
+  enum InventoryStatus {
+    AVAILABLE
+    LOST
+    MAINTENANCE
+  }
+  Book "0..*" -- "0..*" Author : authors
+  Book "0..*" -- "0..*" Genre : genres
+  Book "1" -- "1..*" Edition : editions
+  Publisher "1" -- "0..*" Edition : publishes
+  Edition "1" -- "0..*" PhysicalCopy : has copies
+  PhysicalCopy --> InventoryStatus
+}
+
+package "Pessoas e empréstimos" {
+  abstract class Person {
+    +id: UUID
+    +cpf: String
+    +fullName: String
+    +dateOfBirth: LocalDate
+    +email: String
+  }
+  class Librarian {
+    -passwordHash: String
+  }
+  class Client {
+    +cellNumber: String
+    +registeredAt: LocalDate
+    +registrationExpiration: LocalDate
+  }
+  class Loan {
+    +id: UUID
+    +dateLoan: LocalDate
+    +dueDate: LocalDate
+    +dateReturn: LocalDate
+    +renewalCount: Integer
+  }
+  class ClientSuspension {
+    +id: UUID
+    +reason: String
+    +startsAt: LocalDate
+    +endsAt: LocalDate
+  }
+  Person <|-- Librarian
+  Person <|-- Client
+  Client "1" -- "0..*" Loan : borrows
+  Librarian "1" -- "0..*" Loan : registers
+  Loan "0..*" --> "1" PhysicalCopy : concerns
+  Client "1" -- "0..*" ClientSuspension : has history
+  ClientSuspension "0..*" --> "0..1" Loan : triggered by
+}
+
+note right of Loan
+  One Loan record represents one physical copy.
+  An active loan has dateReturn = null.
+  A PostgreSQL partial unique index prevents
+  more than one active loan per physical copy.
+end note
+
+note bottom of Person
+  JPA inheritance strategy: JOINED.
+  Common attributes are stored once in persons;
+  clients and librarians use person_id as PK/FK.
+end note
+
+@enduml
