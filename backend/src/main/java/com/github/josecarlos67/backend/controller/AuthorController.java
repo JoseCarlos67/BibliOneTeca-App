@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping(value = "authors")
@@ -36,7 +38,7 @@ public class AuthorController {
   }
 
   @GetMapping("{id}")
-  public ResponseEntity<AuthorResponseDTO> getDetails(@PathVariable UUID id) {
+  public ResponseEntity<AuthorResponseDTO> getDetailsById(@PathVariable UUID id) {
     Optional<Author> authorOptional = authorService.getById(id);
 
     if(authorOptional.isPresent()) {
@@ -67,5 +69,26 @@ public class AuthorController {
 
     return ResponseEntity.noContent().build();
   }
+
+  @GetMapping
+  public ResponseEntity<List<AuthorResponseDTO>> search(
+          @RequestParam(value = "name", required = false) String name,
+          @RequestParam(value = "nationality", required = false) String nationality
+  ){
+    List<Author> authorList = authorService.search(name, nationality);
+
+    List<AuthorResponseDTO> authorResponseDTOList = authorList
+            .stream()
+            .map(author -> new AuthorResponseDTO(
+                    author.getId(),
+                    author.getName(),
+                    author.getDateOfBirth(),
+                    author.getDateOfDeath(),
+                    author.getNationality()))
+            .toList();
+
+    return ResponseEntity.ok(authorResponseDTOList);
+  }
+
 
 }
