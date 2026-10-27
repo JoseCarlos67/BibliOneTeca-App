@@ -2,6 +2,7 @@ package com.github.josecarlos67.backend.controller;
 
 import com.github.josecarlos67.backend.controller.dto.AuthorRequestDTO;
 import com.github.josecarlos67.backend.controller.dto.AuthorResponseDTO;
+import com.github.josecarlos67.backend.model.Gender;
 import com.github.josecarlos67.backend.model.collection.Author;
 import com.github.josecarlos67.backend.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping(value = "authors")
@@ -49,7 +49,8 @@ public class AuthorController {
               author.getName(),
               author.getDateOfBirth(),
               author.getDateOfDeath(),
-              author.getNationality()
+              author.getNationality(),
+              author.getGender()
       );
 
       return ResponseEntity.ok(authorResponseDTO);
@@ -73,9 +74,10 @@ public class AuthorController {
   @GetMapping
   public ResponseEntity<List<AuthorResponseDTO>> search(
           @RequestParam(value = "name", required = false) String name,
-          @RequestParam(value = "nationality", required = false) String nationality
+          @RequestParam(value = "nationality", required = false) String nationality,
+          @RequestParam(value = "gender", required = false) Gender gender
   ) {
-    List<Author> authorList = authorService.search(name, nationality);
+    List<Author> authorList = authorService.search(name, nationality, gender);
 
     List<AuthorResponseDTO> authorResponseDTOList = authorList
             .stream()
@@ -84,7 +86,8 @@ public class AuthorController {
                     author.getName(),
                     author.getDateOfBirth(),
                     author.getDateOfDeath(),
-                    author.getNationality()))
+                    author.getNationality(),
+                    author.getGender()))
             .toList();
 
     return ResponseEntity.ok(authorResponseDTOList);

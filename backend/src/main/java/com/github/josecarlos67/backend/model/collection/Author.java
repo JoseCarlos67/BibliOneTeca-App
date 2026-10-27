@@ -1,5 +1,6 @@
 package com.github.josecarlos67.backend.model.collection;
 
+import com.github.josecarlos67.backend.model.Gender;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -27,5 +28,7 @@ public class Author {
 
   private String nationality;
 
+  @Enumerated(EnumType.STRING)
+  private Gender gender;
 
 }

@@ -1,5 +1,7 @@
 package com.github.josecarlos67.backend.controller.dto;
 
+import com.github.josecarlos67.backend.model.Gender;
+
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -8,6 +10,7 @@ public record AuthorResponseDTO(
         String name,
         LocalDate dateOfBirth,
         LocalDate dateOfDeath,
-        String nationality
+        String nationality,
+        Gender gender
 ) {
 }

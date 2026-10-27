@@ -1,5 +1,6 @@
 package com.github.josecarlos67.backend.service;
 
+import com.github.josecarlos67.backend.model.Gender;
 import com.github.josecarlos67.backend.model.collection.Author;
 import com.github.josecarlos67.backend.repository.AuthorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,15 +35,18 @@ public class AuthorService {
     authorRepository.delete(author);
   }
 
-  public List<Author> search(String name, String nationality) {
-    if(name != null && nationality != null)
-       return authorRepository.findByNameAndNationality(name, nationality);
+  public List<Author> search(String name, String nationality, Gender gender) {
+    if(name != null && nationality != null && gender != null)
+       return authorRepository.findByNameAndNationalityAndGender(name, nationality, gender);
 
     if(name != null)
       return authorRepository.findByName(name);
 
     if(nationality != null)
       return authorRepository.findByNationality(nationality);
+
+    if(gender != null)
+      return authorRepository.findByGender(gender);
 
     return authorRepository.findAll();
   }
