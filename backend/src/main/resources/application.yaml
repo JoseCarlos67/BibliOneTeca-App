@@ -11,9 +11,11 @@ spring:
 
   # JPA / Hibernate
   jpa:
+    show-sql: true
     hibernate:
-      ddl-auto: validate
-    open-in-view: false
+      ddl-auto: none
+    properties:
+      hibernate.format_sql: true
 
   # Migrações do banco de dados
   flyway:

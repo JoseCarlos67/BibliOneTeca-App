@@ -4,7 +4,7 @@ import com.github.josecarlos67.backend.model.collection.Author;
 
 import java.time.LocalDate;
 
-public record AuthorDTO(
+public record AuthorRequestDTO(
           String name,
           LocalDate dateOfBirth,
           LocalDate dateOfDeath,
