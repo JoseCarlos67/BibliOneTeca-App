@@ -1,7 +1,8 @@
 package com.github.josecarlos67.backend.service;
 
+import com.github.josecarlos67.backend.controller.dto.AuthorDTO;
 import com.github.josecarlos67.backend.model.collection.Author;
-import com.github.josecarlos67.backend.model.repository.AuthorRepository;
+import com.github.josecarlos67.backend.repository.AuthorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

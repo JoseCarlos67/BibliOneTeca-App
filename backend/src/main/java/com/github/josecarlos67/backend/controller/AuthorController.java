@@ -1,5 +1,6 @@
 package com.github.josecarlos67.backend.controller;
 
+import com.github.josecarlos67.backend.controller.dto.AuthorDTO;
 import com.github.josecarlos67.backend.model.collection.Author;
 import com.github.josecarlos67.backend.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,21 +10,30 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
-@RequestMapping(value = "/authors")
+@RequestMapping(value = "authors")
 public class AuthorController {
 
   @Autowired
   private AuthorService authorService;
 
   @PostMapping
-  public ResponseEntity<Object> saveAuthor(@RequestBody Author author){
+  public ResponseEntity<Object> save(@RequestBody AuthorDTO authorDTO){
+    Author author = authorDTO.mapToAuthor();
 
     authorService.save(author);
 
-    return ResponseEntity.status(HttpStatus.CREATED).build();
+    URI uri = ServletUriComponentsBuilder
+            .fromCurrentRequest()
+            .path("/{id}")
+            .buildAndExpand(author.getId())
+            .toUri();
 
+    return ResponseEntity.created(uri).build();
   }
 
 }

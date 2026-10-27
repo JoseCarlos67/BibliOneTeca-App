@@ -1,4 +1,4 @@
-package com.github.josecarlos67.backend.model.repository;
+package com.github.josecarlos67.backend.repository;
 
 import com.github.josecarlos67.backend.model.collection.Author;
 import org.springframework.data.jpa.repository.JpaRepository;
