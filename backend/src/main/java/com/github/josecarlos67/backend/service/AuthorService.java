@@ -22,4 +22,8 @@ public class AuthorService {
     return  authorRepository.findById(id);
   }
 
+  public void delete(Author author) {
+    authorRepository.delete(author);
+  }
+
 }
