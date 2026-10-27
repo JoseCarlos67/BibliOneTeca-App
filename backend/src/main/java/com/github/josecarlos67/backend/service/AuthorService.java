@@ -15,7 +15,14 @@ public class AuthorService {
   @Autowired
   private AuthorRepository authorRepository;
 
-  public void save(Author author){
+  public Author save(Author author){
+    return authorRepository.save(author);
+  }
+
+  public void update(Author author) throws IllegalAccessException {
+    if (author.getId() == null)
+      throw new IllegalAccessException("To perform an update, the author must already be saved in the database.");
+
     authorRepository.save(author);
   }
 

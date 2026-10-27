@@ -23,7 +23,7 @@ public class AuthorController {
   private AuthorService authorService;
 
   @PostMapping
-  public ResponseEntity<Void> save(@RequestBody AuthorRequestDTO authorRequestDTO){
+  public ResponseEntity<Void> save(@RequestBody AuthorRequestDTO authorRequestDTO) {
     Author author = authorRequestDTO.mapToAuthor();
 
     authorService.save(author);
@@ -41,7 +41,7 @@ public class AuthorController {
   public ResponseEntity<AuthorResponseDTO> getDetailsById(@PathVariable UUID id) {
     Optional<Author> authorOptional = authorService.getById(id);
 
-    if(authorOptional.isPresent()) {
+    if (authorOptional.isPresent()) {
       Author author = authorOptional.get();
 
       AuthorResponseDTO authorResponseDTO = new AuthorResponseDTO(
@@ -62,7 +62,7 @@ public class AuthorController {
   public ResponseEntity<Void> delete(@PathVariable UUID id) {
     Optional<Author> authorOptional = authorService.getById(id);
 
-    if(authorOptional.isEmpty())
+    if (authorOptional.isEmpty())
       return ResponseEntity.notFound().build();
 
     authorService.delete(authorOptional.get());
@@ -74,7 +74,7 @@ public class AuthorController {
   public ResponseEntity<List<AuthorResponseDTO>> search(
           @RequestParam(value = "name", required = false) String name,
           @RequestParam(value = "nationality", required = false) String nationality
-  ){
+  ) {
     List<Author> authorList = authorService.search(name, nationality);
 
     List<AuthorResponseDTO> authorResponseDTOList = authorList
@@ -90,5 +90,25 @@ public class AuthorController {
     return ResponseEntity.ok(authorResponseDTOList);
   }
 
+  @PutMapping("{id}")
+  public ResponseEntity<Void> update(
+          @PathVariable UUID id,
+          @RequestBody AuthorRequestDTO authorRequestDTO
+  ) throws IllegalAccessException {
+    Optional<Author> authorOptional = authorService.getById(id);
+
+    if (authorOptional.isEmpty())
+      return ResponseEntity.notFound().build();
+
+    Author author = authorOptional.get();
+    author.setName(authorRequestDTO.name());
+    author.setDateOfBirth(authorRequestDTO.dateOfBirth());
+    author.setDateOfBirth(authorRequestDTO.dateOfDeath());
+    author.setNationality(authorRequestDTO.nationality());
+
+    authorService.update(author);
+
+    return ResponseEntity.noContent().build();
+  }
 
 }
