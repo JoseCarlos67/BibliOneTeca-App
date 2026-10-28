@@ -1,46 +1,46 @@
-@startuml BibliOneTecaDomain
+@startuml
 hide empty methods
 skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
 
 package "Acervo" {
   class Book {
-    +id: UUID
-    +title: String
+    -id: UUID
+    -title: String
   }
   class Author {
-    +id: UUID
-    +name: String
-    +dateOfBirth: LocalDate
-    +dateOfDeath: LocalDate
-    +nationality: String
+    -id: UUID
+    -name: String
+    -dateOfBirth: LocalDate
+    -dateOfDeath: LocalDate
+    -nationality: String
   }
   class Genre {
-    +id: UUID
-    +name: String
+    -id: UUID
+    -name: String
   }
   class Publisher {
-    +id: UUID
-    +legalName: String
+    -id: UUID
+    -legalName: String
     +tradeName: String
-    +cnpj: String
-    +siteUrl: String
+    -cnpj: String
+    -siteUrl: String
   }
   class Edition {
-    +id: UUID
-    +isbn: String
-    +editionNumber: Integer
-    +yearPublication: Integer
-    +language: String
-    +pageNumber: Integer
-    +coverUrl: String
-    +synopsis: String
+    -id: UUID
+    -isbn: String
+    -editionNumber: Integer
+    -yearPublication: Integer
+    -language: String
+    -pageNumber: Integer
+    -coverUrl: String
+    -synopsis: String
   }
   class PhysicalCopy {
-    +id: UUID
-    +assetCode: String
-    +inventoryStatus: InventoryStatus
-    +acquiredAt: LocalDate
+    -id: UUID
+    -assetCode: String
+    -inventoryStatus: InventoryStatus
+    -acquiredAt: LocalDate
   }
   enum InventoryStatus {
     AVAILABLE
@@ -57,32 +57,32 @@ package "Acervo" {
 
 package "Pessoas e empréstimos" {
   abstract class Person {
-    +id: UUID
-    +cpf: String
-    +fullName: String
-    +dateOfBirth: LocalDate
-    +email: String
+    -id: UUID
+    -cpf: String
+    -fullName: String
+    -dateOfBirth: LocalDate
+    -email: String
   }
   class Librarian {
     -passwordHash: String
   }
   class Client {
-    +cellNumber: String
-    +registeredAt: LocalDate
-    +registrationExpiration: LocalDate
+    -cellNumber: String
+    -registeredAt: LocalDate
+    -registrationExpiration: LocalDate
   }
   class Loan {
-    +id: UUID
-    +dateLoan: LocalDate
-    +dueDate: LocalDate
-    +dateReturn: LocalDate
-    +renewalCount: Integer
+    -id: UUID
+    -dateLoan: LocalDate
+    -dueDate: LocalDate
+    -dateReturn: LocalDate
+    -renewalCount: Integer
   }
   class ClientSuspension {
-    +id: UUID
-    +reason: String
-    +startsAt: LocalDate
-    +endsAt: LocalDate
+    -id: UUID
+    -reason: String
+    -startsAt: LocalDate
+    -endsAt: LocalDate
   }
   Person <|-- Librarian
   Person <|-- Client
@@ -105,5 +105,4 @@ note bottom of Person
   Common attributes are stored once in persons;
   clients and librarians use person_id as PK/FK.
 end note
-
 @enduml

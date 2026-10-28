@@ -1,4 +1,4 @@
-package com.github.josecarlos67.backend.model;
+package com.github.josecarlos67.backend.model.enums;
 
 public enum Gender {
   FEMALE,

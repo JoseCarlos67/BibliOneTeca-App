@@ -1,6 +1,6 @@
 package com.github.josecarlos67.backend.service;
 
-import com.github.josecarlos67.backend.model.Gender;
+import com.github.josecarlos67.backend.model.enums.Gender;
 import com.github.josecarlos67.backend.model.collection.Author;
 import com.github.josecarlos67.backend.repository.AuthorRepository;
 import org.springframework.beans.factory.annotation.Autowired;

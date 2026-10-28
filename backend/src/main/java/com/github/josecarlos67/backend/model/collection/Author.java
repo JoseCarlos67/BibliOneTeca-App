@@ -1,6 +1,6 @@
 package com.github.josecarlos67.backend.model.collection;
 
-import com.github.josecarlos67.backend.model.Gender;
+import com.github.josecarlos67.backend.model.enums.Gender;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Data;

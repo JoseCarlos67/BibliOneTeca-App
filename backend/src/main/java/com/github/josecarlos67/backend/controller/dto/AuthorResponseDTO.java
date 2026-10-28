@@ -1,6 +1,6 @@
 package com.github.josecarlos67.backend.controller.dto;
 
-import com.github.josecarlos67.backend.model.Gender;
+import com.github.josecarlos67.backend.model.enums.Gender;
 
 import java.time.LocalDate;
 import java.util.UUID;
