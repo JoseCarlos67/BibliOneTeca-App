@@ -1,6 +1,6 @@
 package com.github.josecarlos67.backend.controller.dto;
 
-public record ErrorField(
+public record ErrorFieldDTO(
         String field,
         String error
 ) {

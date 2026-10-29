@@ -2,6 +2,8 @@ package com.github.josecarlos67.backend.controller;
 
 import com.github.josecarlos67.backend.controller.dto.AuthorRequestDTO;
 import com.github.josecarlos67.backend.controller.dto.AuthorResponseDTO;
+import com.github.josecarlos67.backend.controller.dto.ErrorResponseDTO;
+import com.github.josecarlos67.backend.execptions.DuplicateRecordException;
 import com.github.josecarlos67.backend.model.enums.Gender;
 import com.github.josecarlos67.backend.model.collection.Author;
 import com.github.josecarlos67.backend.service.AuthorService;
@@ -23,18 +25,23 @@ public class AuthorController {
   private AuthorService authorService;
 
   @PostMapping
-  public ResponseEntity<Void> save(@RequestBody AuthorRequestDTO authorRequestDTO) {
-    Author author = authorRequestDTO.mapToAuthor();
+  public ResponseEntity<Object> save(@RequestBody AuthorRequestDTO authorRequestDTO) {
+    try {
+      Author author = authorRequestDTO.mapToAuthor();
 
-    authorService.save(author);
+      authorService.save(author);
 
-    URI uri = ServletUriComponentsBuilder
-            .fromCurrentRequest()
-            .path("/{id}")
-            .buildAndExpand(author.getId())
-            .toUri();
+      URI uri = ServletUriComponentsBuilder
+              .fromCurrentRequest()
+              .path("/{id}")
+              .buildAndExpand(author.getId())
+              .toUri();
 
-    return ResponseEntity.created(uri).build();
+      return ResponseEntity.created(uri).build();
+    } catch (DuplicateRecordException e) {
+      ErrorResponseDTO conflictDto = ErrorResponseDTO.conflict(e.getMessage());
+      return ResponseEntity.status(conflictDto.status()).body(conflictDto);
+    }
   }
 
   @GetMapping("{id}")
@@ -94,24 +101,30 @@ public class AuthorController {
   }
 
   @PutMapping("{id}")
-  public ResponseEntity<Void> update(
+  public ResponseEntity<Object> update(
           @PathVariable UUID id,
           @RequestBody AuthorRequestDTO authorRequestDTO
   ) throws IllegalAccessException {
-    Optional<Author> authorOptional = authorService.getById(id);
+    try {
+      Optional<Author> authorOptional = authorService.getById(id);
 
-    if (authorOptional.isEmpty())
-      return ResponseEntity.notFound().build();
+      if (authorOptional.isEmpty())
+        return ResponseEntity.notFound().build();
 
-    Author author = authorOptional.get();
-    author.setName(authorRequestDTO.name());
-    author.setDateOfBirth(authorRequestDTO.dateOfBirth());
-    author.setDateOfBirth(authorRequestDTO.dateOfDeath());
-    author.setNationality(authorRequestDTO.nationality());
+      Author author = authorOptional.get();
+      author.setName(authorRequestDTO.name());
+      author.setDateOfBirth(authorRequestDTO.dateOfBirth());
+      author.setDateOfBirth(authorRequestDTO.dateOfDeath());
+      author.setNationality(authorRequestDTO.nationality());
+      author.setGender(authorRequestDTO.gender());
 
-    authorService.update(author);
+      authorService.update(author);
 
-    return ResponseEntity.noContent().build();
+      return ResponseEntity.noContent().build();
+    } catch (DuplicateRecordException e) {
+      ErrorResponseDTO conflictDto = ErrorResponseDTO.conflict(e.getMessage());
+      return ResponseEntity.status(conflictDto.status()).body(conflictDto);
+    }
   }
 
 }
