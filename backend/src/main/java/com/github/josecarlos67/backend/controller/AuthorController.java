@@ -4,9 +4,11 @@ import com.github.josecarlos67.backend.controller.dto.AuthorRequestDTO;
 import com.github.josecarlos67.backend.controller.dto.AuthorResponseDTO;
 import com.github.josecarlos67.backend.controller.dto.ErrorResponseDTO;
 import com.github.josecarlos67.backend.execptions.DuplicateRecordException;
+import com.github.josecarlos67.backend.execptions.OperationNotPermittedException;
 import com.github.josecarlos67.backend.model.enums.Gender;
 import com.github.josecarlos67.backend.model.collection.Author;
 import com.github.josecarlos67.backend.service.AuthorService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +21,10 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "authors")
+@RequiredArgsConstructor
 public class AuthorController {
 
-  @Autowired
-  private AuthorService authorService;
+  private final AuthorService authorService;
 
   @PostMapping
   public ResponseEntity<Object> save(@RequestBody AuthorRequestDTO authorRequestDTO) {
@@ -67,15 +69,20 @@ public class AuthorController {
   }
 
   @DeleteMapping("{id}")
-  public ResponseEntity<Void> delete(@PathVariable UUID id) {
-    Optional<Author> authorOptional = authorService.getById(id);
+  public ResponseEntity<Object> delete(@PathVariable UUID id) {
+    try {
+      Optional<Author> authorOptional = authorService.getById(id);
 
-    if (authorOptional.isEmpty())
-      return ResponseEntity.notFound().build();
+      if (authorOptional.isEmpty())
+        return ResponseEntity.notFound().build();
 
-    authorService.delete(authorOptional.get());
+      authorService.delete(authorOptional.get());
 
-    return ResponseEntity.noContent().build();
+      return ResponseEntity.noContent().build();
+    } catch (OperationNotPermittedException e) {
+      ErrorResponseDTO errorResponseDTO = ErrorResponseDTO.standardError(e.getMessage());
+      return ResponseEntity.status(errorResponseDTO.status()).body(errorResponseDTO);
+    }
   }
 
   @GetMapping

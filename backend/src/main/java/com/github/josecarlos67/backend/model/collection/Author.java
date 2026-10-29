@@ -1,5 +1,6 @@
 package com.github.josecarlos67.backend.model.collection;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.josecarlos67.backend.model.enums.Gender;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -7,6 +8,8 @@ import lombok.Data;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity(name = "authors")
@@ -30,5 +33,9 @@ public class Author {
 
   @Enumerated(EnumType.STRING)
   private Gender gender;
+
+  @JsonIgnore
+  @ManyToMany(mappedBy = "authors")
+  private Set<Book> bookSet = new HashSet<>();
 
 }
