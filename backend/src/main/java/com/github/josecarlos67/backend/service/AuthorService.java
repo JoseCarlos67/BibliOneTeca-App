@@ -1,5 +1,6 @@
 package com.github.josecarlos67.backend.service;
 
+import com.github.josecarlos67.backend.execptions.OperationNotPermittedException;
 import com.github.josecarlos67.backend.model.enums.Gender;
 import com.github.josecarlos67.backend.model.collection.Author;
 import com.github.josecarlos67.backend.repository.AuthorRepository;
@@ -39,6 +40,9 @@ public class AuthorService {
   }
 
   public void delete(Author author) {
+//    if (authorValidator.ownsBooks())
+//      throw new OperationNotPermittedException("It is not permitted to delete an author who has books registered!");
+
     authorRepository.delete(author);
   }
 

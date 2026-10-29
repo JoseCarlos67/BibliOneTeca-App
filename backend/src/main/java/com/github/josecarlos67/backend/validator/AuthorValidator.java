@@ -20,6 +20,10 @@ public class AuthorValidator {
     }
   }
 
+//  public boolean ownsBooks() {
+//
+//  }
+
   private boolean authorAlreadyRegistered(Author author) {
     Optional<Author> authorOptional = authorRepository.findByNameAndDateOfBirthAndNationality(
             author.getName(),
