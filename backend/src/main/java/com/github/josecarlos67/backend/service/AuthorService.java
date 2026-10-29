@@ -1,10 +1,11 @@
 package com.github.josecarlos67.backend.service;
 
 import com.github.josecarlos67.backend.execptions.OperationNotPermittedException;
-import com.github.josecarlos67.backend.model.enums.Gender;
 import com.github.josecarlos67.backend.model.collection.Author;
+import com.github.josecarlos67.backend.model.enums.Gender;
 import com.github.josecarlos67.backend.repository.AuthorRepository;
 import com.github.josecarlos67.backend.validator.AuthorValidator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,13 +14,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class AuthorService {
 
-  @Autowired
-  private AuthorRepository authorRepository;
-
-  @Autowired
-  private AuthorValidator authorValidator;
+  private final AuthorRepository authorRepository;
+  private final AuthorValidator authorValidator;
 
   public Author save(Author author){
     authorValidator.validate(author);
@@ -40,8 +39,8 @@ public class AuthorService {
   }
 
   public void delete(Author author) {
-//    if (authorValidator.ownsBooks())
-//      throw new OperationNotPermittedException("It is not permitted to delete an author who has books registered!");
+    if (authorValidator.ownsBooks(author))
+      throw new OperationNotPermittedException("It is not permitted to delete an author who has books registered!");
 
     authorRepository.delete(author);
   }

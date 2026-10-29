@@ -35,7 +35,7 @@ public class Author {
   private Gender gender;
 
   @JsonIgnore
-  @ManyToMany(mappedBy = "authorSet")
+  @ManyToMany(mappedBy = "authors")
   private Set<Book> bookSet = new HashSet<>();
 
 }
