@@ -8,6 +8,7 @@ import com.github.josecarlos67.backend.execptions.OperationNotPermittedException
 import com.github.josecarlos67.backend.model.enums.Gender;
 import com.github.josecarlos67.backend.model.collection.Author;
 import com.github.josecarlos67.backend.service.AuthorService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class AuthorController {
   private final AuthorService authorService;
 
   @PostMapping
-  public ResponseEntity<Object> save(@RequestBody AuthorRequestDTO authorRequestDTO) {
+  public ResponseEntity<Object> save(@RequestBody @Valid AuthorRequestDTO authorRequestDTO) {
     try {
       Author author = authorRequestDTO.mapToAuthor();
 
@@ -110,7 +111,7 @@ public class AuthorController {
   @PutMapping("{id}")
   public ResponseEntity<Object> update(
           @PathVariable UUID id,
-          @RequestBody AuthorRequestDTO authorRequestDTO
+          @RequestBody @Valid AuthorRequestDTO authorRequestDTO
   ) throws IllegalAccessException {
     try {
       Optional<Author> authorOptional = authorService.getById(id);
