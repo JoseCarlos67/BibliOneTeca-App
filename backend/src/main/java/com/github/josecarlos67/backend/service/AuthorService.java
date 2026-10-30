@@ -6,7 +6,8 @@ import com.github.josecarlos67.backend.model.enums.Gender;
 import com.github.josecarlos67.backend.repository.AuthorRepository;
 import com.github.josecarlos67.backend.validator.AuthorValidator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -46,19 +47,18 @@ public class AuthorService {
   }
 
   public List<Author> search(String name, String nationality, Gender gender) {
-    if(name != null && nationality != null && gender != null)
-       return authorRepository.findByNameAndNationalityAndGender(name, nationality, gender);
+    Author author = new Author();
+    author.setName(name);
+    author.setNationality(nationality);
 
-    if(name != null)
-      return authorRepository.findByName(name);
+    ExampleMatcher exampleMatcher = ExampleMatcher
+            .matching()
+            .withIgnoreNullValues()
+            .withIgnoreCase()
+            .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+    Example<Author> authorExample = Example.of(author, exampleMatcher);
 
-    if(nationality != null)
-      return authorRepository.findByNationality(nationality);
-
-    if(gender != null)
-      return authorRepository.findByGender(gender);
-
-    return authorRepository.findAll();
+    return authorRepository.findAll(authorExample);
   }
 
 }
