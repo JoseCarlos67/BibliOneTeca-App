@@ -7,6 +7,8 @@ package "Acervo" {
   class Book {
     -id: UUID
     -title: String
+    -subtitle: String
+    -synopsis: String
   }
   class Author {
     -id: UUID
@@ -14,6 +16,7 @@ package "Acervo" {
     -dateOfBirth: LocalDate
     -dateOfDeath: LocalDate
     -nationality: String
+    -gender: Gender
   }
   class Genre {
     -id: UUID
@@ -34,25 +37,34 @@ package "Acervo" {
     -language: String
     -pageNumber: Integer
     -coverUrl: String
-    -synopsis: String
   }
   class PhysicalCopy {
     -id: UUID
     -assetCode: String
     -inventoryStatus: InventoryStatus
-    -acquiredAt: LocalDate
+    -acquiredOn: LocalDate
   }
   enum InventoryStatus {
-    AVAILABLE
+    ACTIVE
     LOST
+    DAMAGED
     MAINTENANCE
+    WITHDRAWN
   }
+enum Gender {
+FEMALE
+  MALE
+  NON_BINARY
+  OTHER
+  UNKNOWN
+}
   Book "0..*" -- "0..*" Author : authors
   Book "0..*" -- "0..*" Genre : genres
-  Book "1" -- "1..*" Edition : editions
+  Book "1" -- "0..*" Edition : editions
   Publisher "1" -- "0..*" Edition : publishes
   Edition "1" -- "0..*" PhysicalCopy : has copies
   PhysicalCopy --> InventoryStatus
+  Author --> Gender
 }
 
 package "Pessoas e empréstimos" {
@@ -68,7 +80,7 @@ package "Pessoas e empréstimos" {
   }
   class Client {
     -cellNumber: String
-    -registeredAt: LocalDate
+    -registeredOn: LocalDate
     -registrationExpiration: LocalDate
   }
   class Loan {
@@ -81,8 +93,8 @@ package "Pessoas e empréstimos" {
   class ClientSuspension {
     -id: UUID
     -reason: String
-    -startsAt: LocalDate
-    -endsAt: LocalDate
+    -startsOn: LocalDate
+    -endsOn: LocalDate
   }
   Person <|-- Librarian
   Person <|-- Client
