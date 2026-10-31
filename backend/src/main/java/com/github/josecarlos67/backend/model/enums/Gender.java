@@ -5,7 +5,5 @@ public enum Gender {
   MALE,
   NON_BINARY,
   OTHER,
-  COLLECTIVE,
-  UNKNOWN,
-  NOT_APPLICABLE
+  UNKNOWN
 }

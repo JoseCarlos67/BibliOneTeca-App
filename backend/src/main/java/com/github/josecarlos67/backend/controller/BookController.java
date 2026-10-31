@@ -2,11 +2,13 @@ package com.github.josecarlos67.backend.controller;
 
 import com.github.josecarlos67.backend.model.collection.Book;
 import com.github.josecarlos67.backend.repository.BookRepository;
+import com.github.josecarlos67.backend.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -16,11 +18,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookController {
 
-  private final BookRepository bookRepository;
+  private final BookService bookService;
 
   @GetMapping
-  public ResponseEntity<List<Book>> findAll() {
-    return ResponseEntity.ok(bookRepository.findAll());
+  public ResponseEntity<List<Book>> search(
+          @RequestParam(value = "title", required = false) String title,
+          @RequestParam(value = "subtitle", required = false) String subtitle
+  ) {
+    List<Book> bookList = bookService.search(title, subtitle);
+
+    return ResponseEntity.ok(bookList);
   }
+
+
 
 }
