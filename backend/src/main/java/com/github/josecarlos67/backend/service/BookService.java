@@ -2,6 +2,7 @@ package com.github.josecarlos67.backend.service;
 
 import com.github.josecarlos67.backend.model.collection.Book;
 import com.github.josecarlos67.backend.repository.BookRepository;
+import com.github.josecarlos67.backend.validator.BookValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -14,6 +15,7 @@ import java.util.List;
 public class BookService {
 
   final private BookRepository bookRepository;
+  final private BookValidator bookValidator;
 
   public List<Book> search(String title, String subtitle) {
     Book book = new Book();
@@ -29,6 +31,11 @@ public class BookService {
     Example<Book> bookExample = Example.of(book, matcher);
 
     return bookRepository.findAll(bookExample);
+  }
+
+  public Book save(Book book) {
+    bookValidator.validate(book);
+    return bookRepository.save(book);
   }
 
 }

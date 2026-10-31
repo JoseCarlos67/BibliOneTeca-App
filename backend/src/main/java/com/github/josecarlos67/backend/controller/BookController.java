@@ -1,16 +1,16 @@
 package com.github.josecarlos67.backend.controller;
 
+import com.github.josecarlos67.backend.controller.dto.BookSaveRequestDTO;
+import com.github.josecarlos67.backend.controller.dto.ErrorResponseDTO;
+import com.github.josecarlos67.backend.execptions.DuplicateRecordException;
 import com.github.josecarlos67.backend.model.collection.Book;
-import com.github.josecarlos67.backend.repository.BookRepository;
 import com.github.josecarlos67.backend.service.BookService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -30,6 +30,25 @@ public class BookController {
     return ResponseEntity.ok(bookList);
   }
 
+  @PostMapping
+  public ResponseEntity<Object> save(@RequestBody BookSaveRequestDTO bookSaveRequestDTO) {
+    try {
+      Book book = bookSaveRequestDTO.mapToBook();
 
+      bookService.save(book);
+
+      URI uri = ServletUriComponentsBuilder
+              .fromCurrentRequest()
+              .path("/{id}")
+              .buildAndExpand(book.getId())
+              .toUri();
+
+      return ResponseEntity.created(uri).build();
+    } catch (DuplicateRecordException e) {
+      ErrorResponseDTO conflictDTO = ErrorResponseDTO.conflict(e.getMessage());
+
+      return ResponseEntity.status(conflictDTO.status()).body(conflictDTO);
+    }
+  }
 
 }
