@@ -28,7 +28,7 @@ public class AuthorService {
 
   public void update(Author author) throws IllegalAccessException {
     if (author.getId() == null)
-      throw new IllegalAccessException("To perform an update, the author must already be saved in the database.");
+      throw new IllegalAccessException("To perform an update, the author must already be saved in the system.");
 
     authorValidator.validate(author);
 

@@ -131,6 +131,7 @@ public class AuthorController {
       return ResponseEntity.noContent().build();
     } catch (DuplicateRecordException e) {
       ErrorResponseDTO conflictDto = ErrorResponseDTO.conflict(e.getMessage());
+
       return ResponseEntity.status(conflictDto.status()).body(conflictDto);
     }
   }

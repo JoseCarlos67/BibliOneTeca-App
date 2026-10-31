@@ -9,6 +9,8 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,9 +35,22 @@ public class BookService {
     return bookRepository.findAll(bookExample);
   }
 
-  public Book save(Book book) {
+  public Optional<Book> getById(UUID id) {
+    return bookRepository.findById(id);
+  }
+
+  public void save(Book book) {
     bookValidator.validate(book);
-    return bookRepository.save(book);
+    bookRepository.save(book);
+  }
+
+  public void update(Book book) throws IllegalAccessException {
+    if (book.getId() == null)
+      throw new IllegalAccessException("To perform an update, the book must alread be saved in the system.");
+
+    bookValidator.validate(book);
+
+    bookRepository.save(book);
   }
 
 }
