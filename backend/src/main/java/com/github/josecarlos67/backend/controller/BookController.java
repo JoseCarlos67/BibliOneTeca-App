@@ -34,7 +34,7 @@ public class BookController {
   }
 
   @PostMapping
-  public ResponseEntity<Object> save(@RequestBody BookSaveRequestDTO bookSaveRequestDTO) {
+  public ResponseEntity<Object> save(@RequestBody @Valid BookSaveRequestDTO bookSaveRequestDTO) {
     try {
       Book book = bookSaveRequestDTO.mapToBook();
 
