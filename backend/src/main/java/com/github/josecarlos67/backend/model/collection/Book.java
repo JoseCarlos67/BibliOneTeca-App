@@ -1,16 +1,10 @@
 package com.github.josecarlos67.backend.model.collection;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.github.josecarlos67.backend.controller.dto.BookSaveRequestDTO;
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,6 +22,21 @@ public class Book {
   private String title;
   private String subtitle;
   private String synopsis;
+  private String isbn;
+
+  @Column(name = "edition_number")
+  private Integer editionNumber;
+
+  @Column(name = "year_publication")
+  private Integer yearPublication;
+
+  private String language;
+
+  @Column(name = "page_number")
+  private Integer pageNumber;
+
+  @Column(name = "cover_url")
+  private String coverUrl;
 
   @JsonIgnore
   @ManyToMany
@@ -37,5 +46,8 @@ public class Book {
           inverseJoinColumns = @JoinColumn(name = "author_id")
   )
   private Set<Author> authors = new HashSet<>();
+
+  @Column(name = "publisher_id")
+  private UUID publisherId;
 
 }

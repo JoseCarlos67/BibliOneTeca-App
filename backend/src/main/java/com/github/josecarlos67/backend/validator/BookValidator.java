@@ -1,7 +1,6 @@
 package com.github.josecarlos67.backend.validator;
 
 import com.github.josecarlos67.backend.execptions.DuplicateRecordException;
-import com.github.josecarlos67.backend.model.collection.Author;
 import com.github.josecarlos67.backend.model.collection.Book;
 import com.github.josecarlos67.backend.repository.BookRepository;
 import lombok.RequiredArgsConstructor;

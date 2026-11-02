@@ -1,6 +1,6 @@
 Project BibliOneTeca {
   database_type: 'PostgreSQL'
-  Note: 'Modelo relacional proposto. UUID é tipo nativo do PostgreSQL.'
+  Note: 'Modelo relacional proposto com unificação de Book e Edition. UUID é tipo nativo do PostgreSQL.'
 }
 
 Table persons {
@@ -31,12 +31,26 @@ Table authors {
   date_of_birth date
   date_of_death date
   nationality varchar(100)
+  gender varchar(20) [note: 'Valores válidos: FEMALE, MALE, NON_BINARY, OTHER, UNKNOWN']
 }
 
 Table books {
   id uuid [pk, not null]
   title varchar(255) [not null]
+  subtitle varchar(255)
+  synopsis text
+  isbn varchar(17) [not null, unique, note: 'Normalizar ISBN no serviço antes de persistir']
+  edition_number int [not null, default: 1]
+  year_publication smallint [not null]
+  language varchar(50) [not null]
+  page_number int [not null]
+  cover_url varchar(2048)
+  publisher_id uuid [not null]
   created_at timestamptz [not null]
+
+  indexes {
+    (publisher_id)
+  }
 }
 
 Table genres {
@@ -72,35 +86,16 @@ Table book_genres {
   }
 }
 
-Table editions {
-  id uuid [pk, not null]
-  isbn varchar(17) [not null, unique, note: 'Normalizar ISBN no serviço antes de persistir']
-  edition_number int [not null, default: 1]
-  year_publication smallint [not null]
-  language varchar(50) [not null]
-  page_number int [not null]
-  cover_url varchar(2048)
-  synopsis text
-  book_id uuid [not null]
-  publisher_id uuid [not null]
-  created_at timestamptz [not null]
-
-  indexes {
-    (book_id)
-    (publisher_id)
-  }
-}
-
 Table physical_copies {
   id uuid [pk, not null]
-  edition_id uuid [not null]
+  book_id uuid [not null]
   asset_code varchar(50) [not null, unique]
-  inventory_status varchar(20) [not null, default: 'AVAILABLE', note: 'AVAILABLE, LOST ou MAINTENANCE; empréstimo ativo é derivado de loans']
+  inventory_status varchar(20) [not null, default: 'ACTIVE', note: 'ACTIVE, LOST, DAMAGED, MAINTENANCE, WITHDRAWN; empréstimo ativo é derivado de loans']
   acquired_at date
   created_at timestamptz [not null]
 
   indexes {
-    (edition_id)
+    (book_id)
   }
 }
 
@@ -145,9 +140,8 @@ Ref: book_authors.book_id > books.id [delete: cascade]
 Ref: book_authors.author_id > authors.id [delete: cascade]
 Ref: book_genres.book_id > books.id [delete: cascade]
 Ref: book_genres.genre_id > genres.id [delete: cascade]
-Ref: editions.book_id > books.id [delete: restrict]
-Ref: editions.publisher_id > publishers.id [delete: restrict]
-Ref: physical_copies.edition_id > editions.id [delete: restrict]
+Ref: books.publisher_id > publishers.id [delete: restrict]
+Ref: physical_copies.book_id > books.id [delete: restrict]
 Ref: loans.client_person_id > clients.person_id [delete: restrict]
 Ref: loans.librarian_person_id > librarians.person_id [delete: restrict]
 Ref: loans.physical_copy_id > physical_copies.id [delete: restrict]
