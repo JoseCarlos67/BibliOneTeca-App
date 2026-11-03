@@ -3,14 +3,14 @@ package com.github.josecarlos67.backend.controller;
 import com.github.josecarlos67.backend.controller.dto.AuthorRequestDTO;
 import com.github.josecarlos67.backend.controller.dto.AuthorResponseDTO;
 import com.github.josecarlos67.backend.controller.dto.ErrorResponseDTO;
+import com.github.josecarlos67.backend.controller.mappers.AuthorMapper;
 import com.github.josecarlos67.backend.execptions.DuplicateRecordException;
 import com.github.josecarlos67.backend.execptions.OperationNotPermittedException;
-import com.github.josecarlos67.backend.model.enums.Gender;
 import com.github.josecarlos67.backend.model.collection.Author;
+import com.github.josecarlos67.backend.model.enums.Gender;
 import com.github.josecarlos67.backend.service.AuthorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -26,11 +26,12 @@ import java.util.UUID;
 public class AuthorController {
 
   private final AuthorService authorService;
+  private final AuthorMapper authorMapper;
 
   @PostMapping
   public ResponseEntity<Object> save(@RequestBody @Valid AuthorRequestDTO authorRequestDTO) {
     try {
-      Author author = authorRequestDTO.mapToAuthor();
+      Author author = authorMapper.toEntity(authorRequestDTO);
 
       authorService.save(author);
 
@@ -54,14 +55,7 @@ public class AuthorController {
     if (authorOptional.isPresent()) {
       Author author = authorOptional.get();
 
-      AuthorResponseDTO authorResponseDTO = new AuthorResponseDTO(
-              author.getId(),
-              author.getName(),
-              author.getDateOfBirth(),
-              author.getDateOfDeath(),
-              author.getNationality(),
-              author.getGender()
-      );
+      AuthorResponseDTO authorResponseDTO = authorMapper.toDTO(author);
 
       return ResponseEntity.ok(authorResponseDTO);
     }
