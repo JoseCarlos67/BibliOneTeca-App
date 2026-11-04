@@ -2,6 +2,7 @@ package com.github.josecarlos67.backend.controller;
 
 import com.github.josecarlos67.backend.controller.dto.BookSaveRequestDTO;
 import com.github.josecarlos67.backend.controller.dto.ErrorResponseDTO;
+import com.github.josecarlos67.backend.controller.mappers.BookMapper;
 import com.github.josecarlos67.backend.execptions.DuplicateRecordException;
 import com.github.josecarlos67.backend.model.collection.Book;
 import com.github.josecarlos67.backend.service.BookService;
@@ -22,6 +23,7 @@ import java.util.UUID;
 public class BookController {
 
   private final BookService bookService;
+  private final BookMapper bookMapper;
 
   @GetMapping
   public ResponseEntity<List<Book>> search(
@@ -36,7 +38,7 @@ public class BookController {
   @PostMapping
   public ResponseEntity<Object> save(@RequestBody @Valid BookSaveRequestDTO bookSaveRequestDTO) {
     try {
-      Book book = bookSaveRequestDTO.mapToBook();
+      Book book = bookMapper.toEntity(bookSaveRequestDTO);
 
       bookService.save(book);
 
@@ -60,7 +62,7 @@ public class BookController {
           @RequestBody @Valid BookSaveRequestDTO bookSaveRequestDTO
   ) {
     try {
-      Optional<Book> bookOptional = bookService.getById(id);
+      Optional<Book> bookOptional = Optional.ofNullable(bookMapper.toEntity(bookSaveRequestDTO));
 
       if (bookOptional.isEmpty())
         return ResponseEntity.notFound().build();

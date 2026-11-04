@@ -3,7 +3,7 @@ package com.github.josecarlos67.backend.model.collection;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Data;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.util.HashSet;
@@ -11,7 +11,8 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity(name = "books")
-@Data
+@Getter
+@Setter
 public class Book {
 
   @Id
@@ -49,5 +50,18 @@ public class Book {
 
   @Column(name = "publisher_id")
   private UUID publisherId;
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Book book = (Book) o;
+    return id != null && id.equals(book.id);
+  }
+
+  @Override
+  public int hashCode() {
+    return getClass().hashCode();
+  }
 
 }
