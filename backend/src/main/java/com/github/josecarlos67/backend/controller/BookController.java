@@ -20,7 +20,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping(value = "books")
 @RequiredArgsConstructor
-public class BookController {
+public class BookController implements GenericController {
 
   private final BookService bookService;
   private final BookMapper bookMapper;
@@ -42,11 +42,7 @@ public class BookController {
 
       bookService.save(book);
 
-      URI uri = ServletUriComponentsBuilder
-              .fromCurrentRequest()
-              .path("/{id}")
-              .buildAndExpand(book.getId())
-              .toUri();
+      URI uri = generatedHeaderLocation(book.getId());
 
       return ResponseEntity.created(uri).build();
     } catch (DuplicateRecordException e) {
