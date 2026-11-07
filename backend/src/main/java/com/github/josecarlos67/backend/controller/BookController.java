@@ -1,16 +1,13 @@
 package com.github.josecarlos67.backend.controller;
 
 import com.github.josecarlos67.backend.controller.dto.BookSaveRequestDTO;
-import com.github.josecarlos67.backend.controller.dto.ErrorResponseDTO;
 import com.github.josecarlos67.backend.controller.mappers.BookMapper;
-import com.github.josecarlos67.backend.execptions.DuplicateRecordException;
 import com.github.josecarlos67.backend.model.collection.Book;
 import com.github.josecarlos67.backend.service.BookService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -36,28 +33,21 @@ public class BookController implements GenericController {
   }
 
   @PostMapping
-  public ResponseEntity<Object> save(@RequestBody @Valid BookSaveRequestDTO bookSaveRequestDTO) {
-    try {
-      Book book = bookMapper.toEntity(bookSaveRequestDTO);
+  public ResponseEntity<Void> save(@RequestBody @Valid BookSaveRequestDTO bookSaveRequestDTO) {
+    Book book = bookMapper.toEntity(bookSaveRequestDTO);
 
-      bookService.save(book);
+    bookService.save(book);
 
-      URI uri = generatedHeaderLocation(book.getId());
+    URI uri = generatedHeaderLocation(book.getId());
 
-      return ResponseEntity.created(uri).build();
-    } catch (DuplicateRecordException e) {
-      ErrorResponseDTO conflictDTO = ErrorResponseDTO.conflict(e.getMessage());
-
-      return ResponseEntity.status(conflictDTO.status()).body(conflictDTO);
-    }
+    return ResponseEntity.created(uri).build();
   }
 
   @PutMapping("{id}")
-  public ResponseEntity<Object> update(
+  public ResponseEntity<Void> update(
           @PathVariable UUID id,
           @RequestBody @Valid BookSaveRequestDTO bookSaveRequestDTO
   ) {
-    try {
       Optional<Book> bookOptional = Optional.ofNullable(bookMapper.toEntity(bookSaveRequestDTO));
 
       if (bookOptional.isEmpty())
@@ -71,11 +61,6 @@ public class BookController implements GenericController {
       bookService.save(book);
 
       return ResponseEntity.noContent().build();
-    } catch (DuplicateRecordException e) {
-      ErrorResponseDTO conflictDTO = ErrorResponseDTO.conflict(e.getMessage());
-
-      return ResponseEntity.status(conflictDTO.status()).body(conflictDTO);
-    }
   }
 
 }

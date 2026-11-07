@@ -2,10 +2,7 @@ package com.github.josecarlos67.backend.controller;
 
 import com.github.josecarlos67.backend.controller.dto.AuthorRequestDTO;
 import com.github.josecarlos67.backend.controller.dto.AuthorResponseDTO;
-import com.github.josecarlos67.backend.controller.dto.ErrorResponseDTO;
 import com.github.josecarlos67.backend.controller.mappers.AuthorMapper;
-import com.github.josecarlos67.backend.execptions.DuplicateRecordException;
-import com.github.josecarlos67.backend.execptions.OperationNotPermittedException;
 import com.github.josecarlos67.backend.model.collection.Author;
 import com.github.josecarlos67.backend.model.enums.Gender;
 import com.github.josecarlos67.backend.service.AuthorService;
@@ -13,7 +10,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -29,8 +25,7 @@ public class AuthorController implements GenericController {
   private final AuthorMapper authorMapper;
 
   @PostMapping
-  public ResponseEntity<Object> save(@RequestBody @Valid AuthorRequestDTO authorRequestDTO) {
-    try {
+  public ResponseEntity<Void> save(@RequestBody @Valid AuthorRequestDTO authorRequestDTO) {
       Author author = authorMapper.toEntity(authorRequestDTO);
 
       authorService.save(author);
@@ -38,10 +33,6 @@ public class AuthorController implements GenericController {
       URI uri = generatedHeaderLocation(author.getId());
 
       return ResponseEntity.created(uri).build();
-    } catch (DuplicateRecordException e) {
-      ErrorResponseDTO conflictDto = ErrorResponseDTO.conflict(e.getMessage());
-      return ResponseEntity.status(conflictDto.status()).body(conflictDto);
-    }
   }
 
   @GetMapping("{id}")
@@ -60,8 +51,7 @@ public class AuthorController implements GenericController {
   }
 
   @DeleteMapping("{id}")
-  public ResponseEntity<Object> delete(@PathVariable UUID id) {
-    try {
+  public ResponseEntity<Void> delete(@PathVariable UUID id) {
       Optional<Author> authorOptional = authorService.getById(id);
 
       if (authorOptional.isEmpty())
@@ -70,10 +60,6 @@ public class AuthorController implements GenericController {
       authorService.delete(authorOptional.get());
 
       return ResponseEntity.noContent().build();
-    } catch (OperationNotPermittedException e) {
-      ErrorResponseDTO errorResponseDTO = ErrorResponseDTO.standardError(e.getMessage());
-      return ResponseEntity.status(errorResponseDTO.status()).body(errorResponseDTO);
-    }
   }
 
   @GetMapping
@@ -99,11 +85,10 @@ public class AuthorController implements GenericController {
   }
 
   @PutMapping("{id}")
-  public ResponseEntity<Object> update(
+  public ResponseEntity<Void> update(
           @PathVariable UUID id,
           @RequestBody @Valid AuthorRequestDTO authorRequestDTO
   ) throws IllegalAccessException {
-    try {
       Optional<Author> authorOptional = authorService.getById(id);
 
       if (authorOptional.isEmpty())
@@ -119,11 +104,6 @@ public class AuthorController implements GenericController {
       authorService.update(author);
 
       return ResponseEntity.noContent().build();
-    } catch (DuplicateRecordException e) {
-      ErrorResponseDTO conflictDto = ErrorResponseDTO.conflict(e.getMessage());
-
-      return ResponseEntity.status(conflictDto.status()).body(conflictDto);
-    }
   }
 
 }
